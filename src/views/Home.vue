@@ -8,7 +8,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import Chat from "@/components/Chat.vue";
 import MenuBar from "@/components/MenuBar.vue";
 

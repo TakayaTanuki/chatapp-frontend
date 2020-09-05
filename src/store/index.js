@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex)
 
@@ -33,8 +34,6 @@ export default new Vuex.Store({
         const loginResult = await axios.post('http://localhost:3000/login', param);
         if (loginResult.data === 'OK') {
           // 認証に成功した場合
-          console.log(loginResult)
-          console.log('認証に成功しました。');
           commit('login', param);
         } else {
           // 認証に失敗した場合
@@ -49,6 +48,5 @@ export default new Vuex.Store({
       commit('logout');
     }
   },
-  modules: {
-  }
+  plugins:[createPersistedState()]
 })

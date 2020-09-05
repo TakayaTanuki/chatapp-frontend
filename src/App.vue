@@ -16,9 +16,6 @@ export default {
     Login,
     Home,
   },
-  // data: () => ({
-  //   isLogin: false,
-  // }),
   computed: {
     /* 
     スプレッド演算子を使うことで以下と同じコードになる。
@@ -28,16 +25,5 @@ export default {
     */
     ...mapState(["isLogin"]),
   },
-  // mounted() {
-  //   this.$store.watch(
-  //     (state) => (state.userId, state.password),
-  //     (userId, password) => {
-  //       console.log(
-  //         `変更が検知されました。userId:${userId}/password:${password}`
-  //       );
-  //       this.isLogin = true;
-  //     }
-  //   );
-  // },
 };
 </script>

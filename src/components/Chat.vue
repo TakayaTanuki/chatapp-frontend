@@ -5,9 +5,7 @@
         <v-toolbar color="#BBDEFB" light>
           <v-toolbar-title>Welcome ChatApp</v-toolbar-title>
           <v-spacer></v-spacer>
-          <!-- <v-btn @click="deleteRecord">
-            <v-icon>mdi-magnify</v-icon>Delete Old Chat
-          </v-btn> -->
+          <v-btn @click="deleteRecord">Delete Old Chat</v-btn>
         </v-toolbar>
         <!-- v-card内チャットをスクロールさせるためにclass="overflow-y-auto"を指定 -->
         <v-card height="90%" width="100%" class="overflow-y-auto">
@@ -18,9 +16,9 @@
                 <v-icon>mdi-account-circle</v-icon>
               </v-list-item-avatar>
               <v-list-item-content>
-                <v-list-item-title v-text="message.id"></v-list-item-title>
+                <v-list-item-title v-text="message.user_id"></v-list-item-title>
                 <v-list-item-subtitle v-text="message.message"></v-list-item-subtitle>
-                <v-list-item-subtitle v-text="message.time"></v-list-item-subtitle>
+                <v-list-item-subtitle v-text="message.date_time"></v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
             <v-divider inset v-if="messages.length > 0"></v-divider>
@@ -43,64 +41,74 @@
 
 <script>
 import io from "socket.io-client";
-// import axios from "axios";
+import axios from "axios";
 
 export default {
   name: "Chat",
   data: () => ({
     message: "",
     messages: [],
-    socket: "",
     userId: "",
+    socket: "",
   }),
   methods: {
     //チャットを投稿する処理
-
-    // ToDo Indexの調整
     sendMessage() {
       this.userId = this.$store.state.userId;
-      console.log(this.$store.state.userId);
-      console.log(this.userId);
       const date = new Date();
-      const time = `${date.getFullYear().toString()}-${(
+      const date_time = `${date.getFullYear().toString()}-${(
         "00" + (date.getMonth() + 1).toString()
       ).slice(-2)}-${("00" + date.getDate().toString()).slice(-2)} ${(
         "00" + date.getHours().toString()
       ).slice(-2)}:${("00" + date.getMinutes().toString()).slice(-2)}:${(
         "00" + date.getSeconds().toString()
       ).slice(-2)}`;
+
+      // Socketを利用してサーバと通信を行う。
       this.socket.emit("SEND_MESSAGE", {
-        // index: this.messages.length + 1,
-        id: this.userId,
+        user_id: this.userId,
         message: this.message,
-        time: time,
+        date_time: date_time,
       });
       this.message = "";
     },
-    // ToDo 削除したら画面も変えるように
-    // async deleteRecord() {
-    //   try {
-    //     const result = await axios.post("http://localhost:3000/delete");
-    //     if (result.data === "OK") {
-    //       // 認証に成功した場合
-    //       console.log(result);
-    //       console.log("認証に成功しました。");
-    //     } else {
-    //       // 認証に失敗した場合
-    //       console.log("認証に失敗しました。");
-    //     }
-    //   } catch {
-    //     alert("処理に失敗しました。");
-    //   }
-    // },
+    // 投稿したチャットの削除
+    async deleteRecord() {
+      try {
+        const result = await axios.post("http://localhost:3000/delete");
+        if (result.data === "OK") {
+          // 削除に成功した場合履歴の初期化
+          this.messages = [];
+        } else {
+          // 削除に失敗した場合
+          console.log("削除に失敗しました。");
+        }
+      } catch {
+        alert("処理に失敗しました。");
+      }
+    },
   },
 
-  mounted() {
+  async mounted() {
     this.socket = io("localhost:3000");
+
+    // 初期表示時にDBのレコードを取得する
+    try {
+      const result = await axios.post("http://localhost:3000/getHistories");
+      if (result.data !== "NG") {
+        // 履歴の取得に成功した場合
+        this.messages = result.data;
+      } else {
+        // 履歴の取得に失敗した場合
+        console.log("履歴の表示に失敗しました。");
+      }
+    } catch {
+      alert("処理に失敗しました。");
+    }
 
     // 投稿されたデータの取得
     this.socket.on("MESSAGE", (data) => {
-      this.messages = [...this.messages, data];
+      this.messages = data;
     });
   },
 };
