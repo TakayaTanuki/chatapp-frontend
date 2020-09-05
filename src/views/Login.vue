@@ -20,7 +20,13 @@
             </v-toolbar>
             <v-card-text>
               <v-form>
-                <v-text-field label="UserId" name="login" prepend-icon="mdi-account" type="text" v-model="userId"></v-text-field>
+                <v-text-field
+                  label="UserId"
+                  name="login"
+                  prepend-icon="mdi-account"
+                  type="text"
+                  v-model="userId"
+                ></v-text-field>
 
                 <v-text-field
                   id="password"
@@ -40,17 +46,6 @@
                 <v-btn color="#B2EBF2" @click="login">Login</v-btn>
               </v-row>
             </v-card-actions>
-
-            <!-- <v-row align="start" justify="center">
-              <v-col cols="12">If you don't have an account</v-col>
-            </v-row>
-            <v-card-actions>
-              <v-row align="center" justify="center">
-                <v-col cols="12">
-                  <v-btn color="#FFE0B2">Create Account</v-btn>
-                </v-col>
-              </v-row>
-            </v-card-actions> -->
           </v-card>
         </v-col>
       </v-row>
@@ -61,19 +56,20 @@
 <script>
 export default {
   name: "Login",
-  components: {
-    // HelloWorld
-  },
-  data:()=>({
-    showPassword:false,
-    userId:'',
-    password:''
+  components: {},
+  data: () => ({
+    showPassword: false,
+    userId: "",
+    password: "",
   }),
-  methods:{
-    login(){
+  methods: {
+    login() {
       // 入力されたログイン情報が正しいか確認
-      this.$store.dispatch('login',{userId:this.userId,password:this.password});
-    }
-  }
+      this.$store.dispatch("login", {
+        userId: this.userId,
+        password: this.password,
+      });
+    },
+  },
 };
 </script>
